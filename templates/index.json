@@ -109,7 +109,7 @@
           "type": "media",
           "settings": {
             "image": "shopify://shop_images/image_a2918bfe-ae1f-4064-9d84-440d66ebb214.png",
-            "video": "",
+            "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             "button_label": "",
             "button_link": "",
             "button_font_color": "#ffffff",
