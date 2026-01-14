@@ -1,0 +1,162 @@
+<style>
+  #section-{{ section.id }} {
+    padding: {{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
+  }
+  #section-{{ section.id }} .blocks-container { display: flex; flex-direction: column; gap: {{ section.settings.block_spacing }}px; }
+  #section-{{ section.id }} .media-block { position: relative; }
+  #section-{{ section.id }} .media-block img { width: 100%; display: block; }
+  #section-{{ section.id }} .button-wrapper { position: absolute; bottom: 20px; left: 0; right: 0; }
+  #section-{{ section.id }} .button-wrapper.align-left { text-align: left; padding-left: 20px; }
+  #section-{{ section.id }} .button-wrapper.align-center { text-align: center; }
+  #section-{{ section.id }} .button-wrapper.align-right { text-align: right; padding-right: 20px; }
+  #section-{{ section.id }} .products-grid { display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); gap: 20px; }
+  #section-{{ section.id }} .product-card { text-align: center; text-decoration: none; color: inherit; }
+  #section-{{ section.id }} .product-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+  #section-{{ section.id }} .product-card h3 { margin: 10px 0 5px; font-size: 14px; }
+  #section-{{ section.id }} .carousel-block { padding: 20px; }
+  #section-{{ section.id }} .compare-price { text-decoration: line-through; color: #999; margin-right: 5px; }
+  @media (max-width: 768px) { #section-{{ section.id }} .products-grid { grid-template-columns: repeat(var(--cols-mobile, 2), 1fr); } }
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="blocks-container">
+    {% for block in section.blocks %}
+      {% if block.type == 'media' %}
+        <div class="media-block" {{ block.shopify_attributes }}>
+          {% assign loading = 'lazy' %}{% if section.index == 1 %}{% assign loading = 'eager' %}{% endif %}
+          
+          {% if block.settings.video != blank %}
+            {{ block.settings.video | external_video_tag }}
+          {% elsif block.settings.image != blank %}
+            <img src="{{ block.settings.image | image_url: width: 1920 }}" alt="{{ block.settings.image.alt | escape }}" loading="{{ loading }}">
+          {% endif %}
+
+          {% if block.settings.button_label != blank %}
+            <div class="button-wrapper align-{{ block.settings.button_alignment }}">
+              <a href="{{ block.settings.button_link }}" style="color: {{ block.settings.button_font_color }}; background: {{ block.settings.button_bg_color }}; padding: 10px 20px; text-decoration: none; display: inline-block;">
+                {{ block.settings.button_label }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {% for block in section.blocks %}
+      {% if block.type == 'product_carousel' %}
+        <div class="carousel-block" style="background-color: {{ block.settings.bg_color }};" {{ block.shopify_attributes }}>
+          <div class="products-grid" style="--cols: {{ block.settings.desktop_columns }}; --cols-mobile: {{ block.settings.mobile_columns }};">
+            {% assign shown_ids = '' %}
+            {% assign count = 0 %}
+            {% assign max = block.settings.max_products %}
+            
+            {% comment %} Pinned product 1 {% endcomment %}
+            {% assign p = block.settings.pinned_product_1 %}
+            {% if p != blank and count < max %}
+              {% unless shown_ids contains p.id %}
+                <a href="{{ p.url }}" class="product-card">
+                  <img src="{{ p.featured_image | image_url: width: 400 }}" alt="{{ p.title | escape }}" loading="lazy">
+                  <h3>{{ p.title }}</h3>
+                  <div>{% if p.compare_at_price > p.price %}<span class="compare-price">{{ p.compare_at_price | money }}</span>{% endif %}{{ p.price | money }}</div>
+                </a>
+                {% assign shown_ids = shown_ids | append: p.id | append: ',' %}
+                {% assign count = count | plus: 1 %}
+              {% endunless %}
+            {% endif %}
+
+            {% comment %} Pinned product 2 {% endcomment %}
+            {% assign p = block.settings.pinned_product_2 %}
+            {% if p != blank and count < max %}
+              {% unless shown_ids contains p.id %}
+                <a href="{{ p.url }}" class="product-card">
+                  <img src="{{ p.featured_image | image_url: width: 400 }}" alt="{{ p.title | escape }}" loading="lazy">
+                  <h3>{{ p.title }}</h3>
+                  <div>{% if p.compare_at_price > p.price %}<span class="compare-price">{{ p.compare_at_price | money }}</span>{% endif %}{{ p.price | money }}</div>
+                </a>
+                {% assign shown_ids = shown_ids | append: p.id | append: ',' %}
+                {% assign count = count | plus: 1 %}
+              {% endunless %}
+            {% endif %}
+
+            {% comment %} Pinned product 3 {% endcomment %}
+            {% assign p = block.settings.pinned_product_3 %}
+            {% if p != blank and count < max %}
+              {% unless shown_ids contains p.id %}
+                <a href="{{ p.url }}" class="product-card">
+                  <img src="{{ p.featured_image | image_url: width: 400 }}" alt="{{ p.title | escape }}" loading="lazy">
+                  <h3>{{ p.title }}</h3>
+                  <div>{% if p.compare_at_price > p.price %}<span class="compare-price">{{ p.compare_at_price | money }}</span>{% endif %}{{ p.price | money }}</div>
+                </a>
+                {% assign shown_ids = shown_ids | append: p.id | append: ',' %}
+                {% assign count = count | plus: 1 %}
+              {% endunless %}
+            {% endif %}
+
+            {% if block.settings.collection != blank %}
+              {% for p in block.settings.collection.products %}
+                {% if count >= max %}{% break %}{% endif %}
+                {% unless shown_ids contains p.id %}
+                  <a href="{{ p.url }}" class="product-card">
+                    <img src="{{ p.featured_image | image_url: width: 400 }}" alt="{{ p.title | escape }}" loading="lazy">
+                    <h3>{{ p.title }}</h3>
+                    <div>{% if p.compare_at_price > p.price %}<span class="compare-price">{{ p.compare_at_price | money }}</span>{% endif %}{{ p.price | money }}</div>
+                  </a>
+                  {% assign shown_ids = shown_ids | append: p.id | append: ',' %}
+                  {% assign count = count | plus: 1 %}
+                {% endunless %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Media & Products",
+  "settings": [
+    { "type": "range", "id": "padding_top", "label": "Top Padding", "min": 0, "max": 100, "default": 40, "unit": "px" },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom Padding", "min": 0, "max": 100, "default": 40, "unit": "px" },
+    { "type": "range", "id": "block_spacing", "label": "Space Between Blocks", "min": 0, "max": 100, "default": 20, "unit": "px" }
+  ],
+  "blocks": [
+    {
+      "type": "media",
+      "name": "Media Block",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "video_url", "id": "video", "label": "Video URL", "accept": ["youtube", "vimeo"] },
+        { "type": "text", "id": "button_label", "label": "Button Label" },
+        { "type": "url", "id": "button_link", "label": "Button Link" },
+        { "type": "color", "id": "button_font_color", "label": "Button Font Color", "default": "#ffffff" },
+        { "type": "color", "id": "button_bg_color", "label": "Button Background", "default": "#000000" },
+        { "type": "select", "id": "button_alignment", "label": "Button Alignment", "options": [
+          { "value": "left", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "right", "label": "Right" }
+        ], "default": "center" }
+      ]
+    },
+    {
+      "type": "product_carousel",
+      "name": "Product Carousel",
+      "limit": 1,
+      "settings": [
+        { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#cccccc" },
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "product", "id": "pinned_product_1", "label": "Pinned Product 1" },
+        { "type": "product", "id": "pinned_product_2", "label": "Pinned Product 2" },
+        { "type": "product", "id": "pinned_product_3", "label": "Pinned Product 3" },
+        { "type": "range", "id": "max_products", "label": "Maximum Products", "min": 1, "max": 20, "default": 8 },
+        { "type": "range", "id": "desktop_columns", "label": "Products per Row (Desktop)", "min": 2, "max": 6, "default": 4 },
+        { "type": "range", "id": "mobile_columns", "label": "Products per Row (Mobile)", "min": 1, "max": 3, "default": 2 }
+      ]
+    }
+  ],
+  "max_blocks": 2,
+  "presets": [{ "name": "Media & Products" }]
+}
+{% endschema %}
