@@ -13,7 +13,6 @@
   #section-{{ section.id }} .product-card { text-align: center; text-decoration: none; color: inherit; }
   #section-{{ section.id }} .product-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
   #section-{{ section.id }} .product-card h3 { margin: 10px 0 5px; font-size: 14px; }
-  #section-{{ section.id }} .carousel-block { padding: 20px; }
   #section-{{ section.id }} .compare-price { text-decoration: line-through; color: #999; margin-right: 5px; }
   @media (max-width: 768px) { #section-{{ section.id }} .products-grid { grid-template-columns: repeat(var(--cols-mobile, 2), 1fr); } }
 </style>
@@ -44,7 +43,7 @@
 
     {% for block in section.blocks %}
       {% if block.type == 'product_carousel' %}
-        <div class="carousel-block" style="background-color: {{ block.settings.bg_color }};" {{ block.shopify_attributes }}>
+        <div class="carousel-block" {{ block.shopify_attributes }}>
           <div class="products-grid" style="--cols: {{ block.settings.desktop_columns }}; --cols-mobile: {{ block.settings.mobile_columns }};">
             {% assign shown_ids = '' %}
             {% assign count = 0 %}
@@ -145,7 +144,6 @@
       "name": "Product Carousel",
       "limit": 1,
       "settings": [
-        { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#cccccc" },
         { "type": "collection", "id": "collection", "label": "Collection" },
         { "type": "product", "id": "pinned_product_1", "label": "Pinned Product 1" },
         { "type": "product", "id": "pinned_product_2", "label": "Pinned Product 2" },
