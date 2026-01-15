@@ -7,7 +7,6 @@ import csv
 
 SHOP_URL = "sdpjy2-rp.myshopify.com"
 API_VERSION = "2026-01"
-#ACCESS_TOKEN = ""
 
 PRODUCTS_QUERY = """
 query getProducts($cursor: String) {
